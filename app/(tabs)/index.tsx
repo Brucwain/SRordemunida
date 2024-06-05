@@ -54,7 +54,9 @@ function pontuar(){
 )
 }
 
+
 //estilos novos. mudando o que falta
+// lindo o daniel 
 
 const styles = StyleSheet.create({
   container:{
