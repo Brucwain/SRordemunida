@@ -1,112 +1,132 @@
-import { useState } from 'react'
-import { View, Text, StyleSheet, Image, TouchableOpacity, Modal } from "react-native"
-//import Slider from '@react-native-community/slider'
-import { ModalPontos } from "./components/modal"
+import React, { useState } from 'react';
+import { View, Text, Button, StyleSheet, TouchableOpacity, Pressable, Image } from 'react-native';
+import Modal from 'react-native-modal';
+import { blue, green } from 'react-native-reanimated/lib/typescript/reanimated2/Colors';
 
+const App = () => {
+  const [valorInicial, setValorInicial] = useState(1000);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [valorParaSubtrair, setValorParaSubtrair] = useState(0);
 
-let charset = "abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVXYWZ0123456789"
+  const abrirModal = (valor) => {
+    setValorParaSubtrair(valor);
+    setModalVisible(true);
+  };
 
+  const confirmarSubtracao = () => {
+    setValorInicial(valorInicial - valorParaSubtrair);
+    setModalVisible(false);
+  };
 
+  const cancelarSubtracao = () => {
+    setModalVisible(false);
+  };
 
-export default function index(){
-  //const [pontosValue, setPontosValue] = useState("")
-  //const [size, setSize] = useState(10) 
-  const [modalVisible, setModalVisible] = useState(false)
-  
+  return (
+    <View style={styles.container}>
+      <Image
+        source={require('./assets/logonova.png')} // Caminho para a imagem local
+        style={styles.image}
+      />
+      <Text style={styles.title}>Subtração Contínua</Text>
+      <Text style={styles.text}>Valor inicial: 1000</Text>
+      <Text style={styles.text}>Valor atual: {valorInicial}</Text>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.ButtonSub} onPress={() => abrirModal(10)}>
+         <Text>BÁSICO</Text>
+        </TouchableOpacity> 
+        <TouchableOpacity style={styles.ButtonSub} onPress={() => abrirModal(20)}>
+         <Text>INTERMEDIÁRIO</Text>
+        </TouchableOpacity> 
+        <TouchableOpacity style={styles.ButtonSub} onPress={() => abrirModal(30)}>
+         <Text>AVANÇADO</Text>
+        </TouchableOpacity> 
+      </View>
 
-
-
-
-function pontuar(){
-  
-
-  setModalVisible(true);
-}
-  return(
-
-        <View style={styles.container}>
-            <Image
-            source={require("./assets/logo.png")}
-            style={styles.logo}
+      <Modal isVisible={isModalVisible}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalText}>Você tem certeza que deseja confirmar a subtração?</Text>
+          <View style={styles.modalButtonContainer}>
+            <Button  
+            title="Confirmar" onPress={confirmarSubtracao}
+            color={"#0069bf"}
             />
-
-            <Text style={styles.title}>Escolha o tipo de erro</Text>
-
-           <View style={styles.buttonArea}>
-             <TouchableOpacity style={styles.button} onPress = {pontuar}>           
-             <Text style={styles.buttonText}>BÁSICO</Text> 
-             </TouchableOpacity>
-             <TouchableOpacity style={styles.button} onPress ={pontuar}>
-             <Text style={styles.buttonText}>MÉDIO</Text> 
-             </TouchableOpacity> 
-             <TouchableOpacity style={styles.button} onPress={pontuar} >
-             <Text style={styles.buttonText}>AVANÇADO</Text>
-             </TouchableOpacity>
-             </View>
-            <Modal visible={modalVisible} animationType='fade' transparent={true}>
-
-            <ModalPontos  handleClose = {() => setModalVisible(false)} />
-
-            </Modal>
+            <Button  
+            color={"red"}
             
-    </View>    
-       
-)
-}
-
-
-//estilos novos. mudando o que falta
-// lindo o daniel 
+            title="Cancelar" onPress={cancelarSubtracao} />
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-  container:{
-    flex:1,
-    backgroundColor: "#008000",
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  logo:{
-    marginBottom: 60
-  },
-  title:{
-   
-    fontSize: 30,
-    fontWeight: 'ultralight',
-    fontStyle: "italic",
-    alignContent: 'center',
-    alignItems: 'center',
-    marginBottom: 30,
-    marginTop: 30,
-  },
-  area:{
-    marginTop: 14,
-    marginBottom: 14,
-    width: "100%",
-    backgroundColor: "#FFF",
-    borderRadius: 8,
-    padding: 8,
-  },
-  button:{
+  container: {
     flex: 1,
-    backgroundColor:"#8B008B",
-    width: "80%",
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 8,
-    marginBottom: 16,
-    marginHorizontal: 2,
-    
-  },
-  buttonText:{
-    color:"#FFF",
-    fontSize: 20,
-  },
-  buttonArea:{
-    flexDirection: "row",  
-    marginTop: 8,
+    justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+  },
+  title: {
+    fontSize: 24,
+    marginBottom: 20,
+  },
+  text: {
+    fontSize: 18,
+    marginBottom: 10,
+  },
+  buttonContainer: {
+    flexDirection: 'column',
+    width: "80%",
     justifyContent: 'space-between',
-    borderRadius: 8,
+    padding: 10,
+    marginBottom: 10,
+    alignContent: 'center',
+    alignItems:'center',
+
+  },
+  confirmButton: {
+    backgroundColor: '#007BFF',
+    padding: 10,
+    borderRadius: 5,
+  },
+  confirmButtonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 4,
+  },
+  modalText: {
+    fontSize: 18,
+    marginBottom: 20,
+  },
+  modalButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+  },
+  ButtonSub:{
+   backgroundColor: 'lightblue',
+   width: "80%",
+   borderRadius: 6,
+   padding: 10,
+   margin: 20,
+   elevation: 12,
+   justifyContent: 'center',
+   alignContent: 'center',
+   alignItems: 'center'
+  },
+  image:{
+    height: 300,
+    width: 300,
   }
-})
+});
+
+export default App;

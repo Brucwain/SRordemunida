@@ -78,7 +78,7 @@ text:{
 buttonArea:{
 
   flexDirection: "row",  
-  width: "90%",
+  width: "100%",
   marginTop: 8,
   alignItems: 'center',
   justifyContent: 'space-between',
