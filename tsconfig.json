@@ -13,5 +13,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-  ]
+, "app/(tabs)/SubtractionScreen.js", "app/(tabs)/screens/HomeScreen.tsx", "app/(tabs)/SubtractionScreen.js", "app/(tabs)/index.tsx"  ]
 }

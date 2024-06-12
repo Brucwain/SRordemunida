@@ -1,14 +1,25 @@
 import React, { useState } from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity, Pressable, Image } from 'react-native';
+import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import Modal from 'react-native-modal';
-import { blue, green } from 'react-native-reanimated/lib/typescript/reanimated2/Colors';
+import { RouteProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../index';
 
-const App = () => {
+type SubtractionScreenRouteProp = RouteProp<RootStackParamList, 'Subtraction'>;
+type SubtractionScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Subtraction'>;
+
+interface Props {
+  route: SubtractionScreenRouteProp;
+  navigation: SubtractionScreenNavigationProp;
+}
+
+const SubtractionScreen: React.FC<Props> = ({ route }) => {
+  const { clubeNome } = route.params;
   const [valorInicial, setValorInicial] = useState(1000);
   const [isModalVisible, setModalVisible] = useState(false);
   const [valorParaSubtrair, setValorParaSubtrair] = useState(0);
 
-  const abrirModal = (valor) => {
+  const abrirModal = (valor: number) => {
     setValorParaSubtrair(valor);
     setModalVisible(true);
   };
@@ -24,37 +35,27 @@ const App = () => {
 
   return (
     <View style={styles.container}>
-      <Image
-        source={require('./assets/logonova.png')} // Caminho para a imagem local
-        style={styles.image}
-      />
-      <Text style={styles.title}>Subtração Contínua</Text>
+      <Text style={styles.title}>{clubeNome}</Text>
       <Text style={styles.text}>Valor inicial: 1000</Text>
       <Text style={styles.text}>Valor atual: {valorInicial}</Text>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.ButtonSub} onPress={() => abrirModal(10)}>
-         <Text>BÁSICO</Text>
-        </TouchableOpacity> 
-        <TouchableOpacity style={styles.ButtonSub} onPress={() => abrirModal(20)}>
-         <Text>INTERMEDIÁRIO</Text>
-        </TouchableOpacity> 
-        <TouchableOpacity style={styles.ButtonSub} onPress={() => abrirModal(30)}>
-         <Text>AVANÇADO</Text>
-        </TouchableOpacity> 
+        <Button title="Subtrair 10" onPress={() => abrirModal(10)} />
+        <Button title="Subtrair 20" onPress={() => abrirModal(20)} />
+        <Button title="Subtrair 30" onPress={() => abrirModal(30)} />
       </View>
+      <TouchableOpacity
+        style={styles.confirmButton}
+        onPress={() => setModalVisible(true)}
+      >
+        <Text style={styles.confirmButtonText}>Confirmar Subtração</Text>
+      </TouchableOpacity>
 
       <Modal isVisible={isModalVisible}>
         <View style={styles.modalContent}>
           <Text style={styles.modalText}>Você tem certeza que deseja confirmar a subtração?</Text>
           <View style={styles.modalButtonContainer}>
-            <Button  
-            title="Confirmar" onPress={confirmarSubtracao}
-            color={"#0069bf"}
-            />
-            <Button  
-            color={"red"}
-            
-            title="Cancelar" onPress={cancelarSubtracao} />
+            <Button title="Confirmar" onPress={confirmarSubtracao} />
+            <Button title="Cancelar" onPress={cancelarSubtracao} />
           </View>
         </View>
       </Modal>
@@ -76,21 +77,20 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 18,
     marginBottom: 10,
+    textAlign: 'center',
   },
   buttonContainer: {
     flexDirection: 'column',
-    width: "80%",
-    justifyContent: 'space-between',
-    padding: 10,
-    marginBottom: 10,
-    alignContent: 'center',
-    alignItems:'center',
-
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '80%',
+    marginBottom: 20,
   },
   confirmButton: {
     backgroundColor: '#007BFF',
     padding: 10,
     borderRadius: 5,
+    marginTop: 20,
   },
   confirmButtonText: {
     color: '#fff',
@@ -112,21 +112,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     width: '100%',
   },
-  ButtonSub:{
-   backgroundColor: 'lightblue',
-   width: "80%",
-   borderRadius: 6,
-   padding: 10,
-   margin: 20,
-   elevation: 12,
-   justifyContent: 'center',
-   alignContent: 'center',
-   alignItems: 'center'
-  },
-  image:{
-    height: 300,
-    width: 300,
-  }
 });
 
-export default App;
+export default SubtractionScreen;
