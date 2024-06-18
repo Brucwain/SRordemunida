@@ -1,100 +1,140 @@
 import React, { useState } from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity, Pressable, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, TextInput, ImageBackground } from 'react-native';
 import Modal from 'react-native-modal';
-import { blue, green } from 'react-native-reanimated/lib/typescript/reanimated2/Colors';
+import SubtractionScreen from '../screens/HomeScreen';
 
-const App = () => {
-  const [valorInicial, setValorInicial] = useState(1000);
+interface Pontuacao {
+  clubeNome: string;
+  pontuacao: number;
+}
+
+const App: React.FC = () => {
+  const [currentScreen, setCurrentScreen] = useState<'Home' | 'Subtraction'>('Home');
+  const [clubeNome, setClubeNome] = useState('');
+  const [pontuacoes, setPontuacoes] = useState<Pontuacao[]>([]);
   const [isModalVisible, setModalVisible] = useState(false);
-  const [valorParaSubtrair, setValorParaSubtrair] = useState(0);
+  const [nome, setNome] = useState('');
 
-  const abrirModal = (valor) => {
-    setValorParaSubtrair(valor);
-    setModalVisible(true);
-  };
-
-  const confirmarSubtracao = () => {
-    setValorInicial(valorInicial - valorParaSubtrair);
+  const handleConfirm = () => {
+    setClubeNome(nome);
+    setCurrentScreen('Subtraction');
     setModalVisible(false);
   };
 
-  const cancelarSubtracao = () => {
-    setModalVisible(false);
+  const handleFinalizar = (pontuacao: number) => {
+    setPontuacoes([...pontuacoes, { clubeNome, pontuacao }]);
+    setCurrentScreen('Home');
   };
 
   return (
-    <View style={styles.container}>
-      <Image
-        source={require('./assets/logonova.png')} // Caminho para a imagem local
-        style={styles.image}
-      />
-      <Text style={styles.title}>Subtração Contínua</Text>
-      <Text style={styles.text}>Valor inicial: 1000</Text>
-      <Text style={styles.text}>Valor atual: {valorInicial}</Text>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.ButtonSub} onPress={() => abrirModal(10)}>
-         <Text>BÁSICO</Text>
-        </TouchableOpacity> 
-        <TouchableOpacity style={styles.ButtonSub} onPress={() => abrirModal(20)}>
-         <Text>INTERMEDIÁRIO</Text>
-        </TouchableOpacity> 
-        <TouchableOpacity style={styles.ButtonSub} onPress={() => abrirModal(30)}>
-         <Text>AVANÇADO</Text>
-        </TouchableOpacity> 
-      </View>
-
-      <Modal isVisible={isModalVisible}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalText}>Você tem certeza que deseja confirmar a subtração?</Text>
-          <View style={styles.modalButtonContainer}>
-            <Button  
-            title="Confirmar" onPress={confirmarSubtracao}
-            color={"#0069bf"}
-            />
-            <Button  
-            color={"red"}
-            
-            title="Cancelar" onPress={cancelarSubtracao} />
-          </View>
+    <ImageBackground source={require('../assets/backgroundapp.png')} style={styles.background}>
+      <View style={styles.overlay}>
+        <View style={styles.container}>
+          {currentScreen === 'Home' ? (
+            <>
+              <Text style={styles.title}>Pontuações Salvas</Text>
+              <FlatList
+                data={pontuacoes}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item }) => (
+                  <View style={styles.pontuacaoContainer}>
+                    <Text style={styles.text}>{item.clubeNome}: {item.pontuacao}</Text>
+                  </View>
+                )}
+              />
+              <TouchableOpacity
+                style={styles.addButton}
+                onPress={() => setModalVisible(true)}
+              >
+                <Text style={styles.addButtonText}>+</Text>
+              </TouchableOpacity>
+              <Modal isVisible={isModalVisible} style={styles.modal}>
+                <View style={styles.modalContent}>
+                  <Text style={styles.modalText}>Digite o nome do clube</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Nome do clube"
+                    value={nome}
+                    onChangeText={setNome}
+                  />
+                  <View style={styles.modalButtonContainer}>
+                    <TouchableOpacity style={styles.modalButton} onPress={handleConfirm}>
+                      <Text style={styles.buttonText}>Confirmar</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.modalButton} onPress={() => setModalVisible(false)}>
+                      <Text style={styles.buttonText}>Cancelar</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </Modal>
+            </>
+          ) : (
+            <SubtractionScreen clubeNome={clubeNome} onFinalizar={handleFinalizar} />
+          )}
         </View>
-      </Modal>
-    </View>
+      </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    resizeMode: 'cover',
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)', // Semi-transparent black overlay
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    padding: 20,
   },
   title: {
     fontSize: 24,
     marginBottom: 20,
+    color: '#fff', // White text color
+    textTransform: 'uppercase',
+    fontWeight: '900',
+    textShadowColor: 'black',
+    textShadowOffset: {width: 2, height: 2,},
+    textShadowRadius: 2,
   },
   text: {
-    fontSize: 18,
-    marginBottom: 10,
-  },
-  buttonContainer: {
-    flexDirection: 'column',
-    width: "80%",
-    justifyContent: 'space-between',
-    padding: 10,
-    marginBottom: 10,
-    alignContent: 'center',
-    alignItems:'center',
-
-  },
-  confirmButton: {
-    backgroundColor: '#007BFF',
-    padding: 10,
-    borderRadius: 5,
-  },
-  confirmButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
+    textTransform: 'uppercase',
+    fontWeight: '900',
+    textShadowColor: 'black',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 3,
+  },
+  pontuacaoContainer: {
+    marginTop: 10,
+    alignItems: 'center',
+  },
+  addButton: {
+    backgroundColor: '#007BFF',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+  },
+  addButtonText: {
+    color: '#fff',
+    fontSize: 36,
+    lineHeight: 36,
+  },
+  modal: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 0,
   },
   modalContent: {
     backgroundColor: 'white',
@@ -102,9 +142,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 4,
+    width: '80%',
   },
   modalText: {
     fontSize: 18,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  input: {
+    width: '100%',
+    padding: 10,
+    borderColor: '#ccc',
+    borderWidth: 1,
     marginBottom: 20,
   },
   modalButtonContainer: {
@@ -112,21 +161,18 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     width: '100%',
   },
-  ButtonSub:{
-   backgroundColor: 'lightblue',
-   width: "80%",
-   borderRadius: 6,
-   padding: 10,
-   margin: 20,
-   elevation: 12,
-   justifyContent: 'center',
-   alignContent: 'center',
-   alignItems: 'center'
+  modalButton: {
+    backgroundColor: '#007BFF',
+    padding: 15,
+    borderRadius: 5,
+    marginBottom: 10,
+    alignItems: 'center',
+    width: '40%',
   },
-  image:{
-    height: 300,
-    width: 300,
-  }
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
 });
 
 export default App;
